@@ -14,7 +14,6 @@ async function requestSpin() {
 }
 
 function animateSpin(names, finalName) {
-  // Fake spin: cycle quickly through provided names, then land on finalName
   const cycle = names.length ? names.slice() : [finalName];
   let i = 0, steps = 25 + Math.floor(Math.random()*10);
   const interval = setInterval(() => {
@@ -35,7 +34,6 @@ spinBtn?.addEventListener("click", async () => {
   const finalName = await requestSpin();
   spinBtn.disabled = false;
   if (!finalName) return;
-  // Use the pills on the page as the “names” to cycle through visually
   const pillTexts = [...document.querySelectorAll(".pill")].map(el => el.textContent.trim());
   animateSpin(pillTexts, finalName);
 });
