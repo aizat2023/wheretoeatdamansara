@@ -6,7 +6,6 @@
   <title>Where Should We Eat?</title>
   <style>
     body { font-family: system-ui, sans-serif; max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
-    h1 { margin-bottom: .25rem; }
     .card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem; margin: 1rem 0; }
     .row { display: flex; gap: .5rem; }
     input[type=text]{ flex: 1; padding:.6rem; border:1px solid #ccc; border-radius:8px; }
@@ -19,11 +18,11 @@
 </head>
 <body>
   <h1>Where Should We Eat? 🍽️</h1>
-  <p class="muted">Add places, then spin the wheel to pick one at random. Your list is saved.</p>
+  <p class="muted">Hard-coded list; changes vanish on restart. Edit code to keep them.</p>
 
   <div class="card">
     <form method="POST" action="/add" class="row">
-      <input type="text" name="name" placeholder="Add a place, e.g. 'Nasi Kandar Ali'" required />
+      <input type="text" name="name" placeholder="Add a place" required />
       <button type="submit">Add</button>
     </form>
   </div>
@@ -41,6 +40,9 @@
       <form method="POST" action="/delete" class="row" style="margin-top:.75rem">
         <input type="text" name="name" placeholder="Type exact name to delete" />
         <button type="submit">Delete</button>
+      </form>
+      <form method="POST" action="/reset" class="row" style="margin-top:.5rem">
+        <button type="submit">Reset to defaults</button>
       </form>
     {% endif %}
   </div>
