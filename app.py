@@ -5,10 +5,10 @@ app = Flask(__name__)
 
 # ✅ Edit this list to “save” places in code
 DEFAULT_PLACES = [
-    "Nasi Kandar Ali",
-    "Roti Canai Pak Din",
-    "Mee Bandung Muar",
-    "Sate Kajang",
+    "Nasi Kandar Padang Kota",
+    "Kerabu Station",
+    "Ayam Penyet Amir",
+    "Nasi ayam peha gemuk",
 ]
 PLACES = DEFAULT_PLACES.copy()
 
