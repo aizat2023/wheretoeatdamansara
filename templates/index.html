@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Where Should We Eat?</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { margin-bottom: .25rem; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem; margin: 1rem 0; }
+    .row { display: flex; gap: .5rem; }
+    input[type=text]{ flex: 1; padding:.6rem; border:1px solid #ccc; border-radius:8px; }
+    button { padding:.6rem .9rem; border-radius:8px; border:1px solid #bbb; background:#fafafa; cursor:pointer; }
+    button:hover { background:#f0f0f0; }
+    .pill { display:inline-block; padding:.25rem .6rem; border:1px solid #ddd; border-radius:999px; margin:.25rem; }
+    #spinner { font-size: 2rem; min-height: 3rem; text-align:center; margin: 1rem 0; }
+    .muted { color:#666; }
+  </style>
+</head>
+<body>
+  <h1>Where Should We Eat? 🍽️</h1>
+  <p class="muted">Add places, then spin the wheel to pick one at random. Your list is saved.</p>
+
+  <div class="card">
+    <form method="POST" action="/add" class="row">
+      <input type="text" name="name" placeholder="Add a place, e.g. 'Nasi Kandar Ali'" required />
+      <button type="submit">Add</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <strong>Saved places ({{ places|length }})</strong><br/>
+    {% if places|length == 0 %}
+      <p class="muted">No places yet — add some above.</p>
+    {% else %}
+      <div>
+        {% for p in places %}
+          <span class="pill">{{ p }}</span>
+        {% endfor %}
+      </div>
+      <form method="POST" action="/delete" class="row" style="margin-top:.75rem">
+        <input type="text" name="name" placeholder="Type exact name to delete" />
+        <button type="submit">Delete</button>
+      </form>
+    {% endif %}
+  </div>
+
+  <div class="card" id="spin-card">
+    <div id="spinner">Ready to spin 🎰</div>
+    <div class="row" style="justify-content:center">
+      <button id="spinBtn">Spin</button>
+      <button id="spinAgainBtn" style="display:none">Spin Again</button>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
