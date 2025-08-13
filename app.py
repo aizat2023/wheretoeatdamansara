@@ -1,58 +1,45 @@
-import os, random
-from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, jsonify
-from flask_sqlalchemy import SQLAlchemy
+const spinner = document.getElementById("spinner");
+const spinBtn = document.getElementById("spinBtn");
+const againBtn = document.getElementById("spinAgainBtn");
 
-app = Flask(__name__)
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret")
+async function requestSpin() {
+  const r = await fetch("/spin", { method: "POST" });
+  if (!r.ok) {
+    const j = await r.json().catch(() => ({}));
+    spinner.textContent = j.error || "Add some places first.";
+    return null;
+  }
+  const { result } = await r.json();
+  return result;
+}
 
-# Render provides DATABASE_URL for Postgres. Fall back to local SQLite for dev.
-db_url = os.environ.get("DATABASE_URL", "sqlite:///local.db")
-# Heroku/Render sometimes give postgres://; SQLAlchemy expects postgresql://
-db_url = db_url.replace("postgres://", "postgresql://")
-app.config["SQLALCHEMY_DATABASE_URI"] = db_url
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+function animateSpin(names, finalName) {
+  const cycle = names.length ? names.slice() : [finalName];
+  let i = 0, steps = 25 + Math.floor(Math.random()*10);
+  const interval = setInterval(() => {
+    spinner.textContent = cycle[i % cycle.length];
+    i++;
+    if (i > steps) {
+      clearInterval(interval);
+      spinner.textContent = "🎯 " + finalName;
+      spinBtn.style.display = "none";
+      againBtn.style.display = "inline-block";
+    }
+  }, 80);
+}
 
-db = SQLAlchemy(app)
+spinBtn?.addEventListener("click", async () => {
+  spinBtn.disabled = true;
+  spinner.textContent = "Spinning...";
+  const finalName = await requestSpin();
+  spinBtn.disabled = false;
+  if (!finalName) return;
+  const pillTexts = [...document.querySelectorAll(".pill")].map(el => el.textContent.trim());
+  animateSpin(pillTexts, finalName);
+});
 
-class Place(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), unique=True, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-with app.app_context():
-    db.create_all()
-
-@app.get("/")
-def home():
-    places = [p.name for p in Place.query.order_by(Place.name).all()]
-    return render_template("index.html", places=places)
-
-@app.post("/add")
-def add_place():
-    name = request.form.get("name", "").strip()
-    if name:
-        exists = Place.query.filter(Place.name.ilike(name)).first()
-        if not exists:
-            db.session.add(Place(name=name))
-            db.session.commit()
-    return redirect(url_for("home"))
-
-@app.post("/delete")
-def delete_place():
-    name = request.form.get("name", "").strip()
-    if name:
-        Place.query.filter(Place.name.ilike(name)).delete(synchronize_session=False)
-        db.session.commit()
-    return redirect(url_for("home"))
-
-@app.post("/spin")
-def spin():
-    places = [p.name for p in Place.query.all()]
-    if not places:
-        return jsonify({"error": "No places yet"}), 400
-    choice = random.choice(places)
-    return jsonify({"result": choice})
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+againBtn?.addEventListener("click", async () => {
+  againBtn.style.display = "none";
+  spinBtn.style.display = "inline-block";
+  spinBtn.click();
+});
