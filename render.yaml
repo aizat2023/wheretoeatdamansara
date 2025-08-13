@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: eat-picker
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+    databases:
+      - name: picker-db
+databases:
+  - name: picker-db
+    ipAllowList: []  # allow all Render services in your account
